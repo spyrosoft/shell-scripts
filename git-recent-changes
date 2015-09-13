@@ -1,0 +1,29 @@
+#!/usr/bin/zsh
+
+repos_file_name="/tmp/my-git-repos"
+repos_to_push_file_name="/tmp/my-git-repos-to-push"
+repo_has_changes_string="staged for commit"
+repo_branch_ahead_string="Your branch is ahead"
+
+find ~ -type d -name ".git" > $repos_file_name
+
+if [ -f $repos_to_push_file_name ]; then
+	rm $repos_to_push_file_name
+	touch $repos_to_push_file_name
+fi
+
+while IFS='' read -r line || [[ -n "$line" ]]; do
+	cd $line; cd ..
+	repo_has_changes=`git status | grep $repo_has_changes_string`
+	repo_branch_ahead=`git status | grep $repo_branch_ahead_string`
+	echo; echo `pwd`; echo
+	if [[ -n $repo_has_changes || -n $repo_branch_ahead ]]; then
+		git status
+		read user_input </dev/tty
+		if [ "$user_input" = "y" ]; then
+			echo $line >> $repos_to_push_file_name
+		fi
+	fi
+done < $repos_file_name
+
+rm $repos_file_name
