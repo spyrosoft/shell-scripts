@@ -1,6 +1,12 @@
 function git-next-change() {
 	repos_to_push_file_name="/tmp/my-git-repos-to-push"
 	new_repos_to_push_file_name="/tmp/my-git-repos-to-push-new"
+	no_more_repos_message="There are currently no repos marked with changes. To repopulate the list, run git-recent-changes."
+	
+	if [[ ! -f $repos_to_push_file_name ]]; then
+		echo $no_more_repos_message
+		return
+	fi
 	
 	repo_with_changes=`head -n 1 $repos_to_push_file_name`
 	
@@ -13,7 +19,7 @@ function git-next-change() {
 			mv $new_repos_to_push_file_name $repos_to_push_file_name
 	fi
 	if [[ $how_many_more_repos -eq 0 ]]; then
-		echo "There are currently no repos marked with changes. To repopulate the list, run git-recent-changes."
+		echo $no_more_repos_message
 		return
 	fi
 	
