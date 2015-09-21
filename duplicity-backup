@@ -1,0 +1,29 @@
+#!/usr/bin/env zsh
+
+#Allow Source Mismatch is required if your hostname has changed again and it won't run, but you're sure you have the right backup drive in:
+#--allow-source-mismatch \
+
+my_user_args="--no-encryption \
+--verbosity 6 \
+--num-retries 3 \
+--exclude-filelist /home/path/.duplicity/include-filelists/home_my_user \
+/home/path \
+file:///run/media/path/b052422b-06a9-485d-a17a-e92b5f4085e1/arch/path"
+
+root_user_args="--no-encryption \
+--verbosity 6 \
+--num-retries 3 \
+/root \
+file:///run/media/path/b052422b-06a9-485d-a17a-e92b5f4085e1/arch/root"
+
+if [[ $# -eq 0 ]]
+	then
+		eval /usr/bin/duplicity $my_user_args
+		eval /usr/bin/duplicity $root_user_args
+	else
+		eval /usr/bin/duplicity --dry-run $my_user_args
+		#eval /usr/bin/duplicity --dry-run $root_user_args
+fi
+
+#duplicity list-current-files file:///run/media/path/b052422b-06a9-485d-a17a-e92b5f4085e1/arch/path
+#duplicity list-current-files file:///run/media/path/b052422b-06a9-485d-a17a-e92b5f4085e1/arch/root

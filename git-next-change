@@ -1,6 +1,7 @@
 function git-next-change() {
 	repos_to_push_file_name="/tmp/my-git-repos-to-push"
 	new_repos_to_push_file_name="/tmp/my-git-repos-to-push-new"
+	
 	no_more_repos_message="There are currently no repos marked with changes. To repopulate the list, run git-recent-changes."
 	
 	if [[ ! -f $repos_to_push_file_name ]]; then
