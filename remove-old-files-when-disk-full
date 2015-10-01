@@ -1,0 +1,7 @@
+#!/usr/bin/zsh
+
+cd /path/to/directory/containing/files/that/can/be/deleted
+while [ $(df | awk '/\/dev\/vda1/ {print $4}') -lt 2400000 ]
+do
+	rm $(ls -1tr | head -1)
+done

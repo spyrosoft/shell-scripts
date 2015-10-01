@@ -1,0 +1,4 @@
+#!/usr/bin/zsh
+
+su user1 -c '/usr/bin/screen -dmS user1 zsh -c "source ~/.zshrc; sbcl --load init.lisp; exec zsh"'
+su user2 -c '/usr/bin/screen -dmS user2 zsh -c "source ~/.zshrc; sbcl --load init.lisp; exec zsh"'
