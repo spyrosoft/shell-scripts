@@ -9,6 +9,9 @@ iptables --delete-chain GATE1
 iptables --delete-chain GATE2
 iptables --delete-chain GATE3
 
+# Loopback traffic needs to work
+iptables -A INPUT -i lo -j ACCEPT
+
 # Allow existing open connections and all outgoing traffic
 iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A OUTPUT -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT
