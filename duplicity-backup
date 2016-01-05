@@ -16,14 +16,12 @@ root_user_args="--no-encryption \
 /root \
 file:///run/media/path/b052422b-06a9-485d-a17a-e92b5f4085e1/arch/root"
 
-if [[ $# -eq 0 ]]
-	then
-		eval /usr/bin/duplicity $my_user_args
-		eval /usr/bin/duplicity $root_user_args
-	else
-		eval /usr/bin/duplicity --dry-run $my_user_args
-		#eval /usr/bin/duplicity --dry-run $root_user_args
-fi
+echo "Usage: duplicity-backup [--dry-run] [--allow-source-mismatch]"
 
-#duplicity list-current-files file:///run/media/path/b052422b-06a9-485d-a17a-e92b5f4085e1/arch/path
-#duplicity list-current-files file:///run/media/path/b052422b-06a9-485d-a17a-e92b5f4085e1/arch/root
+if [[ $# -eq 0 ]]; then
+	eval /usr/bin/env duplicity $my_user_args
+	eval /usr/bin/env duplicity $root_user_args
+else
+	eval /usr/bin/env duplicity "$@ $my_user_args"
+	eval /usr/bin/env duplicity "$@ $root_user_args"
+fi
