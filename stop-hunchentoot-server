@@ -1,0 +1,4 @@
+#!/usr/bin/env zsh
+
+screen_pid=`ps aux | grep $1 | grep SCREEN | awk '{print $2}'`
+kill $screen_pid
