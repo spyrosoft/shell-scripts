@@ -1,13 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
 # Delete existing chains and rules
-iptables --flush
-iptables --delete-chain KNOCKING
-iptables --delete-chain PASSED
-iptables --delete-chain REJECTLOG
-iptables --delete-chain GATE1
-iptables --delete-chain GATE2
-iptables --delete-chain GATE3
+./blank-slate-iptables
 
 # Loopback traffic needs to work
 iptables -A INPUT -i lo -j ACCEPT
