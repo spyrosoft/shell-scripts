@@ -40,6 +40,23 @@ echo "I need you to set SystemMaxUse=50M and SystemMaxFileSize=10M"
 read
 vim /etc/systemd/journald.conf
 
+echo "Would you like to have a swapfile? (y or n)"
+read use_swapfile
+
+if [[ "$use_swapfile" == "y" ]]; then
+	echo "How big would you like your swapfile to be in gigabytes?"
+	read swapfile_size
+	dd if=/dev/zero of=/mnt/etc/swapfile bs=1024 count=$(( 1048576 * $swapfile_size ))
+	chmod 0600 /mnt/etc/swapfile
+	
+	echo "Swap on /etc/swapfile"
+	mkswap /mnt/etc/swapfile
+	echo >> "
+
+# /etc/swapfile
+/etc/swapfile   none   swap   sw  0 0" >> /mnt/etc/fstab
+fi
+
 echo "Done with the chroot mandatory setup"
 echo "I need you to exit (type exit or ctrl+d) to get back to the installation environment"
 exit
