@@ -122,6 +122,23 @@ sed -i s@#/en_US.UTF-8@/en_US.UTF-8@g /mnt/etc/locale.gen
 echo "Use the default simple firewall rules provided for iptables"
 cp /mnt/etc/iptables/simple_firewall.rules /mnt/etc/iptables/iptables.rules
 
+echo "Would you like to have a swapfile? (y or n)"
+read use_swapfile
+
+if [[ "$use_swapfile" == "y" ]]; then
+	echo "How big would you like your swapfile to be in gigabytes?"
+	read swapfile_size
+	dd if=/dev/zero of=/mnt/etc/swapfile bs=1024 count=$(( 1048576 * $swapfile_size ))
+	chmod 0600 /mnt/etc/swapfile
+	
+	echo "Swap on /mnt/etc/swapfile"
+	mkswap /mnt/etc/swapfile
+	echo >> "
+
+# /etc/swapfile
+/etc/swapfile   none   swap   sw  0 0" >> /mnt/etc/fstab
+fi
+
 echo "Download default .zshrc for root"
 curl -O https://raw.githubusercontent.com/spyrosoft/dotfiles/master/.zshrc
 mv .zshrc /mnt/root
