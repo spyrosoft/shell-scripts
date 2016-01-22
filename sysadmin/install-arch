@@ -1,0 +1,129 @@
+#!/bin/bash
+
+echo "Are you using the dvorak keyboard layout? (y or n)"
+read use_dvorak
+
+echo "Would you like to use encryption? (y or n)"
+read use_encryption
+
+echo "Make the /dev/sda3 filesystem ext4 as the boot partition"
+mkfs.ext4 /dev/sda3
+
+if [[ "$use_encryption" == "y" ]]; then
+	
+	if [[ "$use_dvorak" == "y" ]]; then
+		echo "Switch the layout to qwerty to create a functional password - during boot the keyboard layout defaults qwerty"
+		loadkeys us
+	fi
+	
+	echo "Encrypt /dev/sda1 as the root partition"
+	cryptsetup luksFormat /dev/sda1
+	
+	echo "Unlock the encrypted root partition"
+	cryptsetup luksOpen /dev/sda1 root
+	
+	echo "Make the root partition filesystem ext4"
+	mkfs.ext4 /dev/mapper/root
+	
+	echo "Encrypt /dev/sda2 as the home partition - use the same password as root for convenience"
+	cryptsetup luksFormat /dev/sda2
+	
+	echo "Unlock the encrypted home partition"
+	cryptsetup luksOpen /dev/sda2 home
+	
+	echo "Make the home partition filesystem ext4"
+	mkfs.ext4 /dev/mapper/home
+	
+	echo "Mount the root home and boot partitions under /mnt /mnt/home /mnt/boot"
+	mount /dev/mapper/root /mnt
+	mkdir /mnt/home /mnt/boot
+	mount /dev/mapper/home /mnt/home
+	mount /dev/sda3 /mnt/boot
+	
+	echo "Generate /root/home-partition.key for unlocking the home partition automatically on boot"
+	mkdir /mnt/root
+	dd if=/dev/urandom of=/mnt/root/home-partition.key bs=1024 count=4
+	chmod 400 /mnt/root/home-partition.key
+	
+	echo "Add /root/home-partition.key as a valid key to the encrypted home partition in order to unlock it automatically at boot"
+	cryptsetup luksAddKey /dev/sda2 /mnt/root/home-partition.key
+	
+	if [[ "$use_dvorak" == "y" ]]; then
+		echo "Switch back to dvorak - all of the qwerty passwords are created"
+		loadkeys dvorak
+	fi
+	
+	echo "home /dev/sda2 /root/home-partition.key" >> /mnt/etc/crypttab
+	
+else
+	
+	echo "Make the /dev/sda1 and /dev/sda2 filesystems ext4 as the root and home partitions"
+	mkfs.ext4 /dev/sda1
+	mkfs.ext4 /dev/sda2
+	
+	echo "Mount the three partitions under /mnt"
+	mount /dev/sda1 /mnt
+	mkdir /mnt/home /mnt/boot
+	mount /dev/sda2 /mnt/home
+	mount /dev/sda3 /mnt/boot
+	
+fi
+
+echo "Install Arch on the newly mounted partitions - ^30 ^49 - (ignore nano and vi)"
+pacstrap -i /mnt base
+
+echo "Generate a new /etc/fstab for the current setup"
+genfstab -U -p /mnt >> /mnt/etc/fstab
+
+echo "I need you to make sure that the last two fields of the root partition are 0 1"
+read
+vim /mnt/etc/fstab
+
+echo "Set LANG=en_US.UTF-8 in /etc/locale.conf"
+echo LANG=en_US.UTF-8 > /mnt/etc/locale.conf
+
+echo "Make the default TTY keyboard layout dvorak and set the capslock key as an additional control key"
+cp /mnt/usr/share/kbd/keymaps/i386/dvorak/dvorak.map.gz /mnt/usr/share/kbd/keymaps/i386/dvorak/dvorak-custom.map.gz
+echo KEYMAP=dvorak-custom > /mnt/etc/vconsole.conf
+
+echo "I need you to search for 58 and change the value to Control"
+read
+vim /mnt/usr/share/kbd/keymaps/i386/dvorak/dvorak-custom.map.gz
+
+echo "This may need to be done while chrooted - check on this"
+echo "Symlink the Los_Angeles timezone to /etc/localtime"
+ln -s /mnt/usr/share/zoneinfo/America/Los_Angeles /mnt/etc/localtime
+
+echo "What would you like your new installation's hostname to be?"
+read new_hostname
+echo $new_hostname > /mnt/etc/hostname
+
+if [[ "$use_encryption" == "y" ]]; then
+	echo "I need you to add \"encrypt\" to the HOOKS section"
+	echo "It should look something like:"
+	echo "HOOKS=\"base udev autodetect modconf block encrypt filesystems keyboard fsck\""
+	read
+	vim /mnt/etc/mkinitcpio.conf
+fi
+
+echo "Uncomment #/en_US.UTF-8 in /etc/locale.gen"
+sed -i s@#/en_US.UTF-8@/en_US.UTF-8@g /mnt/etc/locale.gen
+
+echo "Use the default simple firewall rules provided for iptables"
+cp /mnt/etc/iptables/simple_firewall.rules /mnt/etc/iptables/iptables.rules
+
+echo "Download install-arch-chroot and make it executable under root on the new system"
+curl -O https://raw.githubusercontent.com/spyrosoft/shell-scripts/master/sysadmin/install-arch-chroot
+chmod +x install-arch-chroot
+
+echo "Now to arch-chroot to the new installation for local configuration"
+echo "I need you to do the following:"
+echo "./install-arch-chroot"
+read
+arch-chroot /mnt /bin/bash
+
+umount /mnt/boot /mnt/home /mnt
+
+echo "Installation complete - rebooting"
+read
+reboot

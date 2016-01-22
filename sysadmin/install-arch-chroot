@@ -1,0 +1,37 @@
+#!/bin/bash
+
+echo "Set the root password"
+passwd
+
+mkinitcpio -p linux
+
+echo "Install grub"
+pacman -S grub
+grub-install --target=i386-pc --recheck /dev/sda
+
+echo "Install vim"
+pacman -S vim
+
+echo "This is a completely separate environment so I have to ask you again:"
+echo "Would you like to use encryption? (y or n)"
+read use_encryption
+
+if [[ "$use_encryption" == "y" ]]; then
+	echo "I need you to add \"root=/dev/mapper/root cryptdevice=/dev/sda1:root\" to the beginning of GRUB_CMDLINE_LINUX_DEFAULT"
+	echo "It should look something like this:"
+	echo "GRUB_CMDLINE_LINUX_DEFAULT=\"root=/dev/mapper/root cryptdevice=/dev/sda1:root quiet splash\""
+	read
+	vim /etc/default/grub
+fi
+
+grub-mkconfig -o /boot/grub/grub.cfg
+
+echo "Enable the iptables service"
+systemctl enable iptables
+
+echo "I need you to set SystemMaxUse=50M and SystemMaxFileSize=10M"
+read
+vim /etc/systemd/journald.conf
+
+echo "Done with the chroot mandatory setup - exiting back to the installation environment"
+exit
