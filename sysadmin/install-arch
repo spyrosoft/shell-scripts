@@ -84,6 +84,11 @@ echo "I need you to make sure that the last two fields of the root partition are
 read
 vim /mnt/etc/fstab
 
+if [[ "$use_encryption" == "y" ]]; then
+	echo "Add the line to /etc/crypttab enabling automatic decryption of the /dev/sda2 partition"
+	echo "home /dev/sda2 /root/home-partition.key" >> /mnt/etc/crypttab
+fi
+
 echo "Set LANG=en_US.UTF-8 in /etc/locale.conf"
 echo LANG=en_US.UTF-8 > /mnt/etc/locale.conf
 
