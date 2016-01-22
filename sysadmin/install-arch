@@ -120,6 +120,7 @@ cp /mnt/etc/iptables/simple_firewall.rules /mnt/etc/iptables/iptables.rules
 echo "Download install-arch-chroot and make it executable under root on the new system"
 curl -O https://raw.githubusercontent.com/spyrosoft/shell-scripts/master/sysadmin/install-arch-chroot
 chmod +x install-arch-chroot
+mv install-arch-chroot /mnt/
 
 echo "Now to arch-chroot to the new installation for local configuration"
 echo "I need you to do the following:"
@@ -127,8 +128,12 @@ echo "./install-arch-chroot"
 read
 arch-chroot /mnt /bin/bash
 
+rm /mnt/install-arch-chroot
+
 umount /mnt/boot /mnt/home /mnt
 
-echo "Installation complete - rebooting"
+echo "Installation complete"
+echo "Reboot"
 read
+
 reboot
