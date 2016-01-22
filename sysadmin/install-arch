@@ -1,5 +1,10 @@
 #!/bin/bash
 
+echo "This script assumes that you have partitioned /dev/sda into three"
+echo "Have you done so? (y or n)"
+read partitioning_complete
+if [[ "$partitioning_complete" == "n" ]]; then exit 1; fi
+
 echo "Are you using the dvorak keyboard layout? (y or n)"
 read use_dvorak
 
