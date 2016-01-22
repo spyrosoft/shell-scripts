@@ -20,7 +20,9 @@ if [[ "$use_encryption" == "y" ]]; then
 	echo "I need you to add \"root=/dev/mapper/root cryptdevice=/dev/sda1:root\" to the beginning of GRUB_CMDLINE_LINUX_DEFAULT"
 	echo "It should look something like this:"
 	echo "GRUB_CMDLINE_LINUX_DEFAULT=\"root=/dev/mapper/root cryptdevice=/dev/sda1:root quiet splash\""
+	echo "I have added this for reference as a comment to the bottom of the file"
 	read
+	echo "#GRUB_CMDLINE_LINUX_DEFAULT=\"root=/dev/mapper/root cryptdevice=/dev/sda1:root quiet splash\"" >> /etc/default/grub
 	vim /etc/default/grub
 fi
 
@@ -33,5 +35,6 @@ echo "I need you to set SystemMaxUse=50M and SystemMaxFileSize=10M"
 read
 vim /etc/systemd/journald.conf
 
-echo "Done with the chroot mandatory setup - exiting back to the installation environment"
+echo "Done with the chroot mandatory setup"
+echo "I need you to exit (type exit or ctrl+d) to get back to the installation environment"
 exit
