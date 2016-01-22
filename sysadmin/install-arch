@@ -122,6 +122,11 @@ sed -i s@#/en_US.UTF-8@/en_US.UTF-8@g /mnt/etc/locale.gen
 echo "Use the default simple firewall rules provided for iptables"
 cp /mnt/etc/iptables/simple_firewall.rules /mnt/etc/iptables/iptables.rules
 
+echo "Download default .zshrc for root"
+curl -O https://raw.githubusercontent.com/spyrosoft/dotfiles/master/.zshrc
+mv .zshrc /mnt/root
+echo "prompt_color=\"blue\"" > /mnt/root/.zsh-custom
+
 echo "Download install-arch-chroot and make it executable under root on the new system"
 curl -O https://raw.githubusercontent.com/spyrosoft/shell-scripts/master/sysadmin/install-arch-chroot
 chmod +x install-arch-chroot

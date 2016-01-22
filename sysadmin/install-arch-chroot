@@ -9,6 +9,11 @@ echo "Install grub"
 pacman -S grub
 grub-install --target=i386-pc --recheck /dev/sda
 
+echo "Change root's shell to zsh"
+pacman -S zsh
+path_to_zsh=`which zsh`
+chsh -s $path_to_zsh
+
 echo "Install vim"
 pacman -S vim
 
