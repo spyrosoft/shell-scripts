@@ -13,7 +13,7 @@ if [ -f $repos_to_push_file_name ]; then
 fi
 
 while IFS='' read -r line || [[ -n "$line" ]]; do
-	cd $line; cd ..
+	cd "$line/.."
 	repo_has_changes=`git status | grep $repo_has_changes_string`
 	repo_branch_ahead=`git status | grep $repo_branch_ahead_string`
 	echo; echo `pwd`; echo

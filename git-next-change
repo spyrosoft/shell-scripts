@@ -24,7 +24,7 @@ function git-next-change() {
 		return
 	fi
 	
-	cd $repo_with_changes; cd ..
+	cd "$repo_with_changes/.."
 	pwd
 	git status
 }
