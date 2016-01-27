@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if [[ $# -ne 2 ]]; then echo "Usage: $0 example.com [time to live in days, e.g. 365]"; exit 1; fi
+
+openssl req -x509 -newkey rsa:2048 -keyout "$1.key" -out "$1.crt" -nodes
