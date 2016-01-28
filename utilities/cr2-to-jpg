@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if [[ $# -ne 1 ]]; then echo "Usage: $0 \"/path/to/directory\""; exit 1; fi
+
+mogrify -format jpg "$1/*.CR2"
