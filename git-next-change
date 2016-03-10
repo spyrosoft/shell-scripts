@@ -16,7 +16,7 @@ function git-next-change() {
 		then
 			rm $repos_to_push_file_name
 		else
-			tail -n +2 $repos_to_push_file_name > $new_repos_to_push_file_name
+			/usr/bin/env tail -n +2 $repos_to_push_file_name > $new_repos_to_push_file_name
 			mv $new_repos_to_push_file_name $repos_to_push_file_name
 	fi
 	if [[ $how_many_more_repos -eq 0 ]]; then
