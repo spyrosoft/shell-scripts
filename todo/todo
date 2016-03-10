@@ -5,18 +5,30 @@ function todo() {
 	if [[ ! -f $path_to_todo_file ]]; then echo "The Todo file does not exist."; return; fi
 	if [[ $# -gt 1 ]]; then echo "Too many arguments. Usage: $0 [index of todo]"; return; fi
 	todo_index=1
-	if [[ $# -eq 1 ]]; then
-		todo_index=$1
-	fi
+	if [[ $# -eq 1 ]]; then todo_index=$1; fi
 	sed -n "${todo_index}p" $path_to_todo_file
+	unset path_to_todo_file todo_index
 }
 
 function add-todo() {
 	path_to_todo_file=`get-todo-file-path`
 	temporary_todo_file=/tmp/delete-me-temporary-todo-file.txt
-	echo "* " $@ > $temporary_todo_file
+	echo '*' $@ > $temporary_todo_file
 	cat $path_to_todo_file >> $temporary_todo_file
 	mv $temporary_todo_file $path_to_todo_file
+	unset path_to_todo_file temporary_todo_file
+}
+
+function todone() {
+	path_to_todo_file=`get-todo-file-path`
+	if [[ $# -gt 1 ]]; then echo "Too many arguments. Usage: $0 [index of todo]"; return; fi
+	todo_index=1
+	if [[ $# -eq 1 ]]; then todo_index=$1; fi
+	done_todo=`sed -n "${todo_index}p" $path_to_todo_file`
+	echo "Complete: " $done_todo
+	echo $done_todo >> $path_to_todo_file
+	sed -i "${todo_index}d" $path_to_todo_file
+	unset path_to_todo_file todo_index done_todo
 }
 
 function get-todo-file-path() {
