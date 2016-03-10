@@ -25,7 +25,7 @@ function todone() {
 	todo_index=1
 	if [[ $# -eq 1 ]]; then todo_index=$1; fi
 	done_todo=`sed -n "${todo_index}p" $path_to_todo_file`
-	echo "Complete: " $done_todo
+	echo "Complete:" $done_todo
 	echo $done_todo >> $path_to_todo_file
 	sed -i "${todo_index}d" $path_to_todo_file
 	unset path_to_todo_file todo_index done_todo
