@@ -1,36 +1,43 @@
 #!/usr/bin/env bash
 
 function todo() {
-	path_to_todo_file=`get-todo-file-path`
-	if [[ ! -f $path_to_todo_file ]]; then echo "The Todo file does not exist."; return; fi
+	if [[ ! -f $todo_file_path ]]; then echo "The Todo file either does not exist or has not been set with the todo-list command."; return; fi
 	if [[ $# -gt 1 ]]; then echo "Too many arguments. Usage: $0 [index of todo]"; return; fi
 	todo_index=1
 	if [[ $# -eq 1 ]]; then todo_index=$1; fi
-	sed -n "${todo_index}p" $path_to_todo_file
-	unset path_to_todo_file todo_index
+	sed -n "${todo_index}p" $todo_file_path
+	unset todo_index
 }
 
-function add-todo() {
-	path_to_todo_file=`get-todo-file-path`
+function todo-new() {
 	temporary_todo_file=/tmp/delete-me-temporary-todo-file.txt
 	echo '*' $@ > $temporary_todo_file
-	cat $path_to_todo_file >> $temporary_todo_file
-	mv $temporary_todo_file $path_to_todo_file
-	unset path_to_todo_file temporary_todo_file
+	cat $todo_file_path >> $temporary_todo_file
+	mv $temporary_todo_file $todo_file_path
+	unset temporary_todo_file
 }
 
 function todone() {
-	path_to_todo_file=`get-todo-file-path`
 	if [[ $# -gt 1 ]]; then echo "Too many arguments. Usage: $0 [index of todo]"; return; fi
 	todo_index=1
 	if [[ $# -eq 1 ]]; then todo_index=$1; fi
-	done_todo=`sed -n "${todo_index}p" $path_to_todo_file`
+	done_todo=`sed -n "${todo_index}p" $todo_file_path`
 	echo "Complete:" $done_todo
-	echo $done_todo >> $path_to_todo_file
-	sed -i "${todo_index}d" $path_to_todo_file
-	unset path_to_todo_file todo_index done_todo
+	echo $done_todo >> $todo_file_path
+	sed -i "${todo_index}d" $todo_file_path
+	unset todo_index done_todo
 }
 
-function get-todo-file-path() {
-	echo ~/text/todo/general.org
+function todo-list() {
+	if [[ $# -ne 1 ]]; then echo "Usage: $0 which-todo-list"; return; fi
+	if [[ "$todo_file_extension" == "" ]]; then todo_file_extension="org"; fi
+	todo_file_path="$todo_directory/$1.$todo_file_extension"
+	# Note: -f checks full paths only
+	if [[ ! -f $todo_file_path ]]; then
+		echo "No todo list exists at: $todo_file_path";
+		unset todo_file_path
+		return;
+	else
+		echo "Success: $1.$todo_file_extension"
+	fi
 }
