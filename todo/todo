@@ -9,12 +9,22 @@ function todo() {
 	unset todo_index
 }
 
-function todo-new() {
+function todo-add() {
 	temporary_todo_file=/tmp/delete-me-temporary-todo-file.txt
 	echo '*' $@ > $temporary_todo_file
 	cat $todo_file_path >> $temporary_todo_file
 	mv $temporary_todo_file $todo_file_path
 	unset temporary_todo_file
+}
+
+function todo-delete() {
+	todo $@
+	echo "Proceed? (Y/n)"
+	read proceed
+	if [[ "$proceed" == "y" || "$proceed" == "Y" || "$proceed" == "" ]]; then
+		sed -i "${todo_index}d" $todo_file_path
+	fi
+	unset proceed
 }
 
 function todone() {
@@ -38,6 +48,6 @@ function todo-list() {
 		unset todo_file_path
 		return;
 	else
-		echo "Success: $1.$todo_file_extension"
+		todo
 	fi
 }
