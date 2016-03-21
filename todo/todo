@@ -42,13 +42,28 @@ function todone() {
 }
 
 function todo-list() {
-	if [[ $# -ne 1 ]]; then echo "Usage: $0 which-todo-list"; return; fi
+	if [[ $# -ne 1 ]]; then
+		if [[ "$todo_file_path" == "" ]]; then
+			echo "No todo list selected. To select one, use: $0 name-of-todo-list"
+		else
+			echo $todo_file_path
+		fi
+		return;
+	fi
 	if [[ "$todo_file_extension" == "" ]]; then todo_file_extension="org"; fi
 	todo_file_path="$todo_directory/$1.$todo_file_extension"
 	# Note: -f checks full paths only
 	if [[ ! -f $todo_file_path ]]; then
 		echo "No todo list exists at: $todo_file_path";
-		unset todo_file_path
+		echo "Create one? (Y/n)"
+		read proceed
+		if [[ "$proceed" == "y" || "$proceed" == "Y" || "$proceed" == "" ]]; then
+			touch $todo_file_path
+			todo-list $1
+		else
+			unset todo_file_path
+		fi
+		unset proceed
 		return;
 	else
 		todo
