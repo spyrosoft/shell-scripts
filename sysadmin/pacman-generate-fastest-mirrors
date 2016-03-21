@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+cd /etc/pacman.d
+# I prefer https only
+wget https://www.archlinux.org/mirrorlist/all/https/
+mv mirrorlist mirrorlist.old && mv index.html mirrorlist.new
+sed -i 's/^#Server/Server/' mirrorlist.new
+rankmirrors -n 6 mirrorlist.new > mirrorlist
+echo "Complete"
