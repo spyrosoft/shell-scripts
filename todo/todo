@@ -60,6 +60,7 @@ function todo-list() {
 		if [[ "$proceed" == "y" || "$proceed" == "Y" || "$proceed" == "" ]]; then
 			touch $todo_file_path
 			todo-list $1
+			todo-add DONE
 		else
 			unset todo_file_path
 		fi
