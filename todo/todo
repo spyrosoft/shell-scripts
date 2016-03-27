@@ -72,5 +72,5 @@ function todo-list() {
 }
 
 function todos() {
-	cat $todo_file_path
+	less $todo_file_path
 }
