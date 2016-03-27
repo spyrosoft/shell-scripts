@@ -71,6 +71,10 @@ function todo-list() {
 	fi
 }
 
+function todo-edit() {
+	eval "$EDITOR $todo_file_path &"
+}
+
 function todos() {
 	less $todo_file_path
 }
