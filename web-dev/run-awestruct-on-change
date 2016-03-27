@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+while inotifywait -r -e close_write -qq --exclude "/_site" .; do
+	awestruct -g
+done
