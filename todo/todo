@@ -2,19 +2,21 @@
 
 function todo() {
 	if [[ ! -f $todo_file_path ]]; then echo "The Todo file either does not exist or has not been set with the todo-list command."; return; fi
-	if [[ $# -gt 1 ]]; then echo "Too many arguments. Usage: $0 [index of todo]"; return; fi
-	todo_index=1
-	if [[ $# -eq 1 ]]; then todo_index=$1; fi
-	sed -n "${todo_index}p" $todo_file_path
-	unset todo_index
+	if [[ $# -gt 0 ]]; then
+		temporary_todo_file=/tmp/delete-me-temporary-todo-file.txt
+		echo '*' $@ > $temporary_todo_file
+		cat $todo_file_path >> $temporary_todo_file
+		mv $temporary_todo_file $todo_file_path
+		unset temporary_todo_file
+	else
+		todo-number 1
+	fi
 }
 
-function todo-add() {
-	temporary_todo_file=/tmp/delete-me-temporary-todo-file.txt
-	echo '*' $@ > $temporary_todo_file
-	cat $todo_file_path >> $temporary_todo_file
-	mv $temporary_todo_file $todo_file_path
-	unset temporary_todo_file
+function todo-number() {
+	if [[ $# -ne 1 ]]; then echo "Usage: $0 [index of todo]"; return; fi
+	sed -n "${1}p" $todo_file_path
+	unset todo_index
 }
 
 function todo-delete() {
