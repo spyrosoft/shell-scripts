@@ -19,8 +19,9 @@ function todo-number() {
 	unset todo_index
 }
 
-function todo-delete() {
-	todo $@
+function todo-remove() {
+	if [[ $# -ne 1 ]]; then echo "Usage: $0 [index of todo]"; return; fi
+	todo-number $@
 	echo "Proceed? (Y/n)"
 	read proceed
 	if [[ "$proceed" == "y" || "$proceed" == "Y" || "$proceed" == "" ]]; then
