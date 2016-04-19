@@ -74,6 +74,11 @@ function todo-list() {
 	fi
 }
 
+function todo-lists() {
+	if [[ "$todo_file_extension" == "" ]]; then todo_file_extension="org"; fi
+	ls $todo_directory | sed s@\.${todo_file_extension}@@g
+}
+
 function todo-edit() {
 	eval "$EDITOR $todo_file_path &"
 }
