@@ -20,17 +20,16 @@ function todo-number() {
 }
 
 function todo-remove() {
-	if [[ $# -ne 1 ]]; then echo "Usage: $0 [index of todo]"; return; fi
-	todo-number $@
+	if [[ $# -gt 1 ]]; then echo "Usage: $0 [index of todo]"; return; fi
+	todo_remove_index=1
+	if [[ $# -eq 1 ]]; then todo_remove_index=$1; fi
+	todo-number $todo_remove_index
 	echo "Proceed? (Y/n)"
 	read proceed
 	if [[ "$proceed" == "y" || "$proceed" == "Y" || "$proceed" == "" ]]; then
-		todo_index=1
-		if [[ $# -eq 1 ]]; then todo_index=$1; fi
-		sed -i "${todo_index}d" $todo_file_path
-		unset todo_index
+		sed -i "${todo_remove_index}d" $todo_file_path
 	fi
-	unset proceed
+	unset proceed todo_remove_index
 }
 
 function todone() {
