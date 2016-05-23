@@ -40,6 +40,7 @@ function todone() {
 	echo "Complete:" $done_todo
 	echo $done_todo >> $todo_file_path
 	sed -i "${todo_index}d" $todo_file_path
+	echo "Next: " `todo`
 	unset todo_index done_todo
 }
 
