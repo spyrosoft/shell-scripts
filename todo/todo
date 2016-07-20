@@ -1,29 +1,123 @@
 #!/usr/bin/env bash
 
 function todo() {
-	if [[ ! -f $todo_file_path ]]; then echo "The Todo file either does not exist or has not been set with the todo-list command."; return; fi
-	if [[ $# -gt 0 ]]; then
-		temporary_todo_file=/tmp/delete-me-temporary-todo-file.txt
+	if [[ ! -f $todo_file_path ]]; then
+		echo "The todo file: \"$todo_file_path\" either does not exist or has not been set. Please use the todo list command.";
+		return
+	fi
+	
+	if [[ "$1" == "help" ]]; then
+		echo "Examples:"
+		echo
+		echo "  todo"
+		echo "      Displays the current todo item."
+		echo
+		echo "  todo delete [index of todo]"
+		echo "      Without arguments this deletes the current todo item."
+		echo "      With an argument, it deletes the specified todo item."
+		echo
+		echo "  todo list [name-of-list]"
+		echo "      Without any arguments this displays the file path to the current list."
+		echo "      Otherwise it changes the current list to the one specified."
+		echo
+		echo "  todo lists"
+		echo "      Displays all of the available todo lists."
+		echo
+		echo "  todo edit"
+		echo "      Opens the current todo list in your default editor."
+		echo
+		echo "  todo all"
+		echo "      Displays the current todo list contents."
+	fi
+    
+	if [[ "$1" == "delete" || "$1" == "remove" ]]; then
+		if [[ $# -eq 1 ]]; then
+			todo-delete-item 1;
+		elif [[ $# -eq 2 ]]; then
+		    todo-delete-item $2
+		else
+			echo "Usage: $0 delete [index of todo]"
+		fi
+		return
+	fi
+	
+	if [[ "$1" == "lists" ]]; then
+		if [[ "$todo_file_extension" == "" ]]; then todo_file_extension="org"; fi
+		ls $todo_directory | sed s@\.${todo_file_extension}@@g
+		return
+	fi
+	
+	if [[ "$1" == "list" ]]; then
+		if [[ $# -eq 1 ]]; then
+			echo $todo_file_path
+			return;
+		elif [[ $# -eq 2 ]]; then
+			if [[ "$todo_file_extension" == "" ]]; then
+				echo "No todo_file_extension has been specified. Defaulting to .org."
+				todo_file_extension="org";
+			fi
+			if [[ "$todo_directory" == "" ]]; then
+				echo "No todo_directory has been specified. Defaulting to your home directory."
+				todo_directory=$HOME
+			fi
+			todo_file_path="$todo_directory/$1.$todo_file_extension"
+			# Note: -f checks full paths only
+			if [[ ! -f $todo_file_path ]]; then
+				echo "No todo list exists at: $todo_file_path";
+				echo "Create one? (Y/n)"
+				read proceed
+				if [[ "$proceed" == "y" || "$proceed" == "Y" || "$proceed" == "" ]]; then
+					touch $todo_file_path
+					todo list $1
+					todo DONE
+				else
+					unset todo_file_path
+				fi
+				unset proceed
+				return;
+			else
+				todo
+			fi
+		else
+			echo "Usage: $0 list [name-of-list]"
+		fi
+		return
+	fi
+	
+	if [[ "$1" == "edit" ]]; then
+		eval "$EDITOR $todo_file_path &"
+		return
+	fi
+	
+	if [[ "$1" == "all" ]]; then
+		less $todo_file_path
+		return
+	fi
+	
+	if [[ $# -eq 1 && "$1" =~ ^[0-9]+$ ]]; then
+		todo-show-item-by-number $1
+	elif [[ $# -gt 0 ]]; then
+	    temporary_todo_file=/tmp/delete-me-temporary-todo-file.txt
 		echo '*' $@ > $temporary_todo_file
 		cat $todo_file_path >> $temporary_todo_file
 		mv $temporary_todo_file $todo_file_path
 		unset temporary_todo_file
 	else
-		todo-number 1
+		todo-show-item-by-number 1
 	fi
 }
 
-function todo-number() {
-	if [[ $# -ne 1 ]]; then echo "Usage: $0 [index of todo]"; return; fi
+function todo-show-item-by-number() {
+	if [[ $# -ne 1 ]]; then echo "Usage: todo [index of todo]"; return; fi
 	sed -n "${1}p" $todo_file_path
 	unset todo_index
 }
 
-function todo-remove() {
-	if [[ $# -gt 1 ]]; then echo "Usage: $0 [index of todo]"; return; fi
+function todo-delete-item() {
+	if [[ $# -gt 1 ]]; then echo "Usage: todo delete [index of todo]"; return; fi
 	todo_remove_index=1
 	if [[ $# -eq 1 ]]; then todo_remove_index=$1; fi
-	todo-number $todo_remove_index
+	todo-show-item-by-number $todo_remove_index
 	echo "Proceed? (Y/n)"
 	read proceed
 	if [[ "$proceed" == "y" || "$proceed" == "Y" || "$proceed" == "" ]]; then
@@ -42,47 +136,4 @@ function todone() {
 	sed -i "${todo_index}d" $todo_file_path
 	echo "Next: " `todo`
 	unset todo_index done_todo
-}
-
-function todo-list() {
-	if [[ $# -ne 1 ]]; then
-		if [[ "$todo_file_path" == "" ]]; then
-			echo "No todo list selected. To select one, use: $0 name-of-todo-list"
-		else
-			echo $todo_file_path
-		fi
-		return;
-	fi
-	if [[ "$todo_file_extension" == "" ]]; then todo_file_extension="org"; fi
-	todo_file_path="$todo_directory/$1.$todo_file_extension"
-	# Note: -f checks full paths only
-	if [[ ! -f $todo_file_path ]]; then
-		echo "No todo list exists at: $todo_file_path";
-		echo "Create one? (Y/n)"
-		read proceed
-		if [[ "$proceed" == "y" || "$proceed" == "Y" || "$proceed" == "" ]]; then
-			touch $todo_file_path
-			todo-list $1
-			todo DONE
-		else
-			unset todo_file_path
-		fi
-		unset proceed
-		return;
-	else
-		todo
-	fi
-}
-
-function todo-lists() {
-	if [[ "$todo_file_extension" == "" ]]; then todo_file_extension="org"; fi
-	ls $todo_directory | sed s@\.${todo_file_extension}@@g
-}
-
-function todo-edit() {
-	eval "$EDITOR $todo_file_path &"
-}
-
-function todos() {
-	less $todo_file_path
 }
