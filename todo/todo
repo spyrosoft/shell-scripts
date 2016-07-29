@@ -68,7 +68,7 @@ function todo() {
 				read proceed
 				if [[ "$proceed" == "y" || "$proceed" == "Y" || "$proceed" == "" ]]; then
 					touch $todo_file_path
-					todo list $1
+					todo list $2
 					todo DONE
 				fi
 				unset proceed
