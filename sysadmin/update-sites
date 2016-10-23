@@ -3,6 +3,9 @@
 function update-and-restart-server() {
 	cd /home/$1/$2
 	if [[ `git pull` != 'Already up-to-date.' ]]; then
+		if [[ "$3" == "go" ]]; then
+			sudo -S -u $1 -i zsh -l -c "export GOPATH=/home/$1/go && cd $2 && go build"
+		fi
 		systemctl restart $1.service
 	else
 		echo 'Nothing to do for' $1
@@ -12,7 +15,7 @@ function update-and-restart-server() {
 update_file=$1
 
 if [[ -f $update_file ]]; then
-	rm $update_file
+#	rm $update_file
 	
 	#/root/sites-to-update.txt lines are in the format "USER DIRECTORY-OF-REPO"
 	while IFS='' read -r line || [[ -n "$line" ]]; do
