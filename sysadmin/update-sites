@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+if [[ $# -ne 1 ]]; then echo "Usage: $0 /path/to/update/file.conf"; return; fi
+
 function update-and-restart-server() {
 	cd /home/$1/$2
 	if [[ `git pull` != 'Already up-to-date.' ]]; then
