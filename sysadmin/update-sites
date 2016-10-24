@@ -23,6 +23,9 @@ if [[ -f $update_file ]]; then
 	while IFS='' read -r line || [[ -n "$line" ]]; do
 		eval "update-and-restart-server $line"
 	done < /root/sites-to-update.txt
+else
+	echo "The specified config file does not exist:" $update_file
+	return 1
 fi
 
 unset update_file
