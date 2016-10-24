@@ -19,4 +19,5 @@ iptables -A REJECTLOG -j REJECT
 
 # Set up the INPUT rules to allow connections on the specified ports only
 iptables -A INPUT -m state --state NEW -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -m state --state NEW -p tcp --dport 443 -j ACCEPT
 iptables -A INPUT -j REJECTLOG
