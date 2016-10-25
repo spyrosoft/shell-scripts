@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Customize the following on a per-project basis:
+binary_file="example-binary-file-name"
+build_command="example build command"
+file_extension_expression=\.example-file-extension$
+
+$build_command && ./$binary_file &
+
+inotifywait --format "%f" -me close_write -q . | while read file
+do
+	if [[ ! "$file" =~ $file_extension_expression ]]; then continue; fi
+	$build_command && killall $binary_file && echo "File modified: $file. Restarting server." && ./$binary_file &
+done
+
+unset binary_file
