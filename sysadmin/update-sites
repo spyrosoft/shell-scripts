@@ -13,7 +13,7 @@ function update-and-restart-server() {
 	if [[ `git pull` != 'Already up-to-date.' ]]; then
 		if [[ "$3" == "go" ]]; then
 			# Break this out into its own if block to satisfy old-ass versions of zsh
-			if [[ ! `go build` ]]; then
+			if ! go build; then
 				echo 'Error: Could not `go build`.'
 				return 1
 			fi
