@@ -11,9 +11,12 @@ if [[ ! -f $config_file ]]; then echo "The specified config file does not exist:
 function update-and-restart-server() {
 	cd /home/$1/$2
 	if [[ `git pull` != 'Already up-to-date.' ]]; then
-		if [[ "$3" == "go" && ! `go build` ]]; then
-		    echo 'Error: Could not `go build`.'
-			return 1
+		if [[ "$3" == "go" ]]; then
+			# Break this out into its own if block to satisfy old-ass versions of zsh
+			if [[ ! `go build` ]]; then
+				echo 'Error: Could not `go build`.'
+				return 1
+			fi
 		fi
 		systemctl restart $1.service
 	else
