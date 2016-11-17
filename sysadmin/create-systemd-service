@@ -8,10 +8,8 @@ function create-systemd-service() {
 		return
 	fi
 	
-	echo "What username will the server process run under?"
-	read username
-	echo "Enter the domain:"
-	read domain
+	username=$1
+	domain=$2
 
 	new_service_file=/etc/systemd/system/$username.service
 	cp $template_file $new_service_file
