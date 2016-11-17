@@ -20,4 +20,16 @@ else
 
 	# Drop everything else
 	iptables -A INPUT -j DROP
+	
+	if [[ -f /etc/sysconfig/iptables ]]; then
+		cp /etc/sysconfig/iptables /etc/sysconfig/iptables.old
+		iptables-save > /etc/sysconfig/iptables
+		echo "Rules saved to disk"
+	elif [[ -f /etc/iptables/iptables.rules ]]; then
+		cp /etc/iptables/iptables.rules /etc/iptables/iptables.rules.old
+		iptables-save > /etc/iptables/iptables.rules
+		echo "Rules saved to disk"
+	else
+		echo "You will need to manually save rules to disk"
+	fi
 fi
