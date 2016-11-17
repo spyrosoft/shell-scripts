@@ -21,5 +21,4 @@ function create-systemd-service() {
 	unset template_file username domain new_service_file
 }
 
-create-systemd-service
-
+create-systemd-service $@
