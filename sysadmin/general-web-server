@@ -32,6 +32,8 @@ function bash_setup() {
 	
 	touch /tmp/bash-setup-complete
 	
+	chsh -s $(which zsh)
+	
 	echo "Switching to ZSH"
 	echo "Run this script again"
 	read
@@ -39,15 +41,13 @@ function bash_setup() {
 }
 
 function zsh_setup() {
-	chsh -s $(which zsh)
-	
 	mkdir /root/config /root/lock-whitelists
 	
 	echo "Enter a username and the domain for your new website:"
 	echo "Username:"
-	read $username
+	read username
 	echo "Domain:"
-	read $domain
+	read domain
 	create-user $username $domain
 	echo "$username $domain go" >> /root/config/pullhook.conf
 	rezshrc
@@ -56,7 +56,7 @@ function zsh_setup() {
 	install letsencrypt
 	
 	echo "What email address would you like to be notified with regarding your domain's certificate?"
-	read $email
+	read email
 	config_line="$email $domain"
 	echo "Would you like to include the www subdomain? (yes/no)"
 	read yes_or_no
