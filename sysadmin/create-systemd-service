@@ -12,9 +12,15 @@ function create-systemd-service() {
 	domain=$2
 
 	new_service_file=/etc/systemd/system/$username.service
+	if [[ -f $new_service_file ]]; then
+		echo "This service exists: $username.service"
+		return
+	fi
 	cp $template_file $new_service_file
 	sed -i "s/DOMAIN/$domain/g" $new_service_file
 	sed -i "s/USERNAME/$username/g" $new_service_file
+	
+	systemctl enable $username.service
 	
 	unset template_file username domain new_service_file
 }
