@@ -1,0 +1,12 @@
+[Unit]
+Description=Server for DOMAIN.com
+After=haproxy.service
+
+[Service]
+ExecStart=/bin/sudo -u USERNAME screen -dmS USERNAME zsh -c "cd ~/DOMAIN.com; ./DOMAIN.com; exec zsh"
+ExecStop=/root/shell-scripts/sysadmin/end-server-screen-process USERNAME
+Type=forking
+GuessMainPID=no
+
+[Install]
+WantedBy=multi-user.target

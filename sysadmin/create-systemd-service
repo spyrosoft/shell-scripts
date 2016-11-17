@@ -1,0 +1,25 @@
+#!/usr/bin/env zsh
+
+function create-systemd-service() {
+	if [[ $# -ne 2 ]]; then echo "Usage: $0 username domain"; return; fi
+	template_file=~/shell-scripts/sysadmin/templates/systemd.service
+	if [[ ! -f $template_file ]]; then
+		echo "Could not find file: $template_file"
+		return
+	fi
+	
+	echo "What username will the server process run under?"
+	read username
+	echo "Enter the domain:"
+	read domain
+
+	new_service_file=/etc/systemd/system/$username.service
+	cp $template_file $new_service_file
+	sed -i "s/DOMAIN/$domain/g" $new_service_file
+	sed -i "s/USERNAME/$username/g" $new_service_file
+	
+	unset template_file username domain new_service_file
+}
+
+create-systemd-service
+
