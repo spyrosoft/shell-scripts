@@ -79,10 +79,10 @@ function zsh_setup() {
 	unset username domain
 }
 
-if [[ "$ZSH_VERSION" == "" ]]; then
-	echo "Running bash setup"
-	bash_setup
-else
+if [[ "$ZSH_VERSION" != "" ]]; then
 	echo "Running zsh setup"
 	zsh_setup
+else
+	echo "Running bash setup"
+	bash_setup
 fi
