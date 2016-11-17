@@ -39,7 +39,7 @@ function bash_setup() {
 }
 
 function zsh_setup() {
-	chsh -s $SHELL
+	chsh -s $(which zsh)
 	
 	mkdir /root/config /root/lock-whitelists
 	
