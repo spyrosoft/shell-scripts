@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 function bash_setup() {
+	yum update
 	yum install zsh git iptables-services
 	
 	cd /root
@@ -26,6 +27,8 @@ function bash_setup() {
 	./setup
 	
 	cd ~
+	touch .alias
+	rm .bash*
 	
 	echo "Switching to ZSH"
 	echo "Run this script again"
@@ -47,7 +50,7 @@ function zsh_setup() {
 	echo "$username $domain go" >> /root/config/pullhook.conf
 	rezshrc
 	
-	install haproxy golang epel-release
+	install haproxy golang emacs epel-release
 	install letsencrypt
 	
 	echo "What email address would you like to be notified with regarding your domain's certificate?"
@@ -78,6 +81,8 @@ function zsh_setup() {
 
 if [[ "$SHELL" == "/usr/bin/zsh" ]]; then
 	zsh_setup
+	echo "Running zsh setup"
 else
+	echo "Running bash setup"
 	bash_setup
 fi
