@@ -21,6 +21,9 @@ else
 	# Drop everything else
 	iptables -A INPUT -j DROP
 	
+	# Whitelist an ip address on port 22
+	iptables -A INPUT -s $1/32 -p tcp -m tcp --dport 22 -j ACCEPT
+	
 	if [[ -f /etc/sysconfig/iptables ]]; then
 		cp /etc/sysconfig/iptables /etc/sysconfig/iptables.old
 		iptables-save > /etc/sysconfig/iptables
