@@ -80,6 +80,7 @@ function zsh_setup() {
 	systemctl enable haproxy
 	
 	unset username domain
+	rm $0
 }
 
 if [[ -f /tmp/bash-setup-complete ]]; then
