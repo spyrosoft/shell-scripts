@@ -1,7 +1,8 @@
 #!/usr/bin/env zsh
 
 # Delete existing chains and rules
-./blank-slate-iptables
+iptables --flush
+iptables --delete-chain
 
 # Loopback traffic needs to work
 iptables -A INPUT -i lo -j ACCEPT
