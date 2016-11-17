@@ -30,6 +30,8 @@ function bash_setup() {
 	touch .alias
 	rm .bash*
 	
+	touch /tmp/bash-setup-complete
+	
 	echo "Switching to ZSH"
 	echo "Run this script again"
 	read
@@ -79,7 +81,7 @@ function zsh_setup() {
 	unset username domain
 }
 
-if [[ "$ZSH_VERSION" != "" ]]; then
+if [[ -f /tmp/bash-setup-complete ]]; then
 	echo "Running zsh setup"
 	zsh_setup
 else
