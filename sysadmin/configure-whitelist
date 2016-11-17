@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# Remove all rules and chains
+iptables --flush
+iptables --delete-chain
+
+# Allow all traffic on the loopback interface
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A OUTPUT -o lo -j ACCEPT
+
+# Allow all established connections to continue to work
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Allow web traffic
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Drop everything else
+iptables -A INPUT -j DROP
