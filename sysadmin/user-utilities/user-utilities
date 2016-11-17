@@ -1,0 +1,130 @@
+function create-user {
+	if [[ "$1" == "--help" || "$1" == "-h" || $# -eq 0 ]]; then
+		echo "Usage: create-user USERNAME [sbcl]"
+		return
+	fi
+	
+	# Add a convenient way to switch to this user in root's .alias file
+	printf "\nalias $1=\"su $1\"" >> ~/.alias
+	
+	useradd $1
+	
+	# Most operating systems generate a bunch of cruft dotfiles - remove them immediately
+	rm -r /home/$1/.*
+	
+	# Symlink template .files to the user's directory
+	# They can be updated for all users at once and are more secure
+	ln -s $HOME/.files/.zshrc /home/$1/
+	mkdir /home/$1/.emacs.d
+	ln -s $HOME/.files/.emacs.d/init.el /home/$1/.emacs.d/
+	ln -s $HOME/.files/.emacs.d/packages /home/$1/.emacs.d/
+	ln -s $HOME/.files/.emacs.d/individual-packages /home/$1/.emacs.d/
+	ln -s $HOME/.files/.emacs.d/elpa /home/$1/.emacs.d/
+	ln -s $HOME/.files/.emacs.d/packages.el /home/$1/.emacs.d/
+	# Create a custom shell configuration file for the user to override default settings or add additional functionality
+	touch /home/$1/.zsh-custom
+	
+	mkdir /home/$1/.cache
+	touch /home/$1/.histfile
+	
+	ln -s $HOME/.files/.gitignore /home/$1/
+	ln -s $HOME/.files/.gitconfig /home/$1/
+	
+	path_to_zsh=`which zsh`
+	chsh -s $path_to_zsh $1
+	
+	# All users need a lock whitelist that includes the .cache directory and .histfile
+	echo "/home/$1/.cache /home/$1/.histfile" >> ~/lock-whitelists/$1
+	
+	echo "prompt_color=\"red\"\nprompt_prefix=\"=\"\n\n" >> /home/$1/.zsh-custom
+	
+	if [[ "$2" == "sbcl" ]]; then
+		add-emacs-package $1 "sbcl.el"
+		
+		cp /root/create-user-scripts/init/quicklisp.lisp /home/$1/init-quicklisp.lisp
+		chown $1:$1 /home/$1/init-quicklisp.lisp
+		
+		# Hunchentoot's logs need to be writeable by the user
+		echo "/home/$1/hunchentoot/logs/" >> ~/lock-whitelists/$1
+		git clone https://github.com/spyrosoft/hunchentoot-boilerplate /home/$1/hunchentoot
+		
+		# Unlock all of the files in the user's directory for initialization
+		unlock $1
+		
+		cp /root/create-user-scripts/init/sbcl /home/$1/init
+		chmod +x /home/$1/init
+		# Set the init script owner and group to the user so the script can delete itself without warning when the user runs it
+		chown $1:$1 /home/$1/init
+		
+		# Alert the person running this script that they need to run ./init as this part is not automated once switched to the non-privileged user
+		echo "Run ./init"
+		su $1
+		
+		cat /root/create-user-scripts/zsh-custom/sbcl >> /home/$1/.zsh-custom
+		sed -i s@USERNAME@$1@g /home/$1/.zsh-custom
+		
+		lock $1
+		
+		# Add the append only attribute to the access and error logs
+		chattr +a /home/$1/hunchentoot/logs/*.log
+	elif [[ "$2" == "go" ]]; then
+		mkdir /home/$1/go/src /home/$1/go/pkg /home/$1/go/bin
+		echo "export GOPATH=\$HOME/go" >> /home/$1/.zsh-custom
+	fi
+	
+	echo "Run rezshrc"
+}
+
+function lock-root() {
+	chown -R root:root ~
+	find ~ -exec chmod o-rwx {} +
+	chmod -R +r `cat ~/lock-whitelists/root`
+	find `cat ~/lock-whitelists/root` -type d -exec chmod +x {} +
+	chmod +rx /root
+}
+
+function unlock() {
+	if [[ $# != 1 ]]; then echo "Usage: lock USERNAME"; return; fi
+	chown -R $1:$1 /home/$1
+}
+
+function lock() {
+	if [[ $# != 1 ]]; then echo "Usage: lock USERNAME"; return; fi
+	
+	find /home/$1 -type f -exec chmod 640 {} +
+	find /home/$1 -type d -exec chmod 750 {} +
+	chown -R root:$1 /home/$1
+	chown $1:$1 /home/$1
+	
+	if [[ -a ~/lock-whitelists/$1 ]]; then
+		chown -R $1:$1 `cat ~/lock-whitelists/$1`
+	fi
+}
+
+function lock-unsafe() {
+	# For PHP...
+	if [[ $# != 1 ]]; then echo "Usage: lock USERNAME"; return; fi
+	chown -R $1:$1 /home/$1
+	find /home/$1 -type f -exec chmod 644 {} +
+	find /home/$1 -type d -exec chmod 755 {} +
+}
+
+function user-pull() {
+	if [[ $# != 2 ]]; then echo "Usage: lock USERNAME LANGUAGE"; return; fi
+	
+	web-directory="/home/$1"
+	if [[ "$2" == "sbcl" ]]; then
+		web-directory="/home/$1/hunchentoot"
+	fi
+	
+	cd $web-directory
+	pull
+	
+	lock $1
+}
+
+function add-emacs-package() {
+	if [[ $# != 2 ]]; then echo "Usage: add-emacs-package USERNAME PACKAGE"; return; fi
+	
+	echo "(load \"/home/$1/.emacs.d/individual-packages/$2\")" >> /home/$1/.emacs.d/individual-packages.el
+}

@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+
+curl -O https://beta.quicklisp.org/quicklisp.lisp
+sbcl --load init-quicklisp.lisp
+cd ~/hunchentoot
+sbcl --load init.lisp
+cd ~
+rm init-quicklisp.lisp
+rm init
