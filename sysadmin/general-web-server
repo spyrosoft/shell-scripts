@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
 
 function bash_setup() {
-	cd /root
-	if [[ ! -f "shell-scripts/sysadmin/configure-whitelist" ]]; then
-		echo "The whitelist configuration utility cannot be found."
-		echo "Have you cloned shell-scripts to the /root directory?"
-		return;
-	fi
-	
 	yum install zsh git iptables-services
+	
+	cd /root
+	git clone https://github.com/spyrosoft/shell-scripts
 	
 	systemctl start iptables
 	systemctl enable iptables
