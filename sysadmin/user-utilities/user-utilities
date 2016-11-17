@@ -1,6 +1,7 @@
 function create-user {
 	if [[ "$1" == "--help" || "$1" == "-h" || $# -eq 0 ]]; then
-		echo "Usage: create-user USERNAME [sbcl]"
+		echo "Usage: create-user USERNAME DOMAIN"
+		echo "Example: create-user spyrosoft spyrosoft.com"
 		return
 	fi
 	
@@ -67,9 +68,8 @@ function create-user {
 		
 		# Add the append only attribute to the access and error logs
 		chattr +a /home/$1/hunchentoot/logs/*.log
-	elif [[ "$2" == "go" ]]; then
-		mkdir /home/$1/go/src /home/$1/go/pkg /home/$1/go/bin
-		echo "export GOPATH=\$HOME/go" >> /home/$1/.zsh-custom
+	elif [[ "$2" != "" ]]; then
+		mkdir /home/$1/$2
 	fi
 	
 	echo "Run rezshrc"
