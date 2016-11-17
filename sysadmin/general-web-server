@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+function bash_setup() {
+	cd /root
+	if [[ ! -f "shell-scripts/sysadmin/configure-whitelist" ]]; then
+		echo "The whitelist configuration utility cannot be found."
+		echo "Have you cloned shell-scripts to the /root directory?"
+		return;
+	fi
+	
+	yum install zsh git iptables-services
+	
+	systemctl start iptables
+	systemctl enable iptables
+	echo "What is your current IP Address?"
+	read current_ip_address
+	/root/shell-scripts/sysadmin/configure-whitelist $current_ip_address
+	unset current_ip_address
+	
+	rm /etc/localtime
+	ln -s /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+	ls -lh /etc/localtime
+	
+	git clone https://github.com/spyrosoft/.files
+	cp .files/zsh-custom/server-root .zsh-custom
+	cd .files/
+	./setup
+	
+	cd /root/.emacs.d/
+	./setup
+	
+	cd ~
+	
+	echo "Switching to ZSH"
+	echo "Run this script again"
+	read
+	zsh
+}
+
+function zsh_setup() {
+	chsh -s $SHELL
+	
+	mkdir /root/config /root/lock-whitelists
+	
+	echo "Enter a username and the domain for your new website:"
+	echo "Username:"
+	read $username
+	echo "Domain:"
+	read $domain
+	create-user $username $domain
+	echo "$username $domain go" >> /root/config/pullhook.conf
+	rezshrc
+	
+	install haproxy golang epel-release
+	install letsencrypt
+	
+	echo "What email address would you like to be notified with regarding your domain's certificate?"
+	read $email
+	config_line="$email $domain"
+	echo "Would you like to include the www subdomain? (yes/no)"
+	read yes_or_no
+	if [[ "$yes_or_no" == "yes" ]]; then
+		config_line="$config_line www"
+	else
+		echo "Not including www subdomain."
+	fi
+	echo $config_line >> /root/config/letsencrypt-certs.conf
+	unset config_line yes_or_no
+	
+	/root/shell-scripts/sysadmin/renew-letsencrypt-certs /root/config/letsencrypt-certs.conf
+	
+	mv /etc/haproxy /etc/original-haproxy
+	git clone https://github.com/spyrosoft/haproxy-config /etc/haproxy
+	mkdir /etc/haproxy/certs
+	
+	edit-haproxy
+	restart-haproxy
+	systemctl enable haproxy
+	
+	unset username domain
+}
+
+if [[ "$SHELL" == "/usr/bin/zsh" ]]; then
+	zsh_setup
+else
+	bash_setup
+fi
