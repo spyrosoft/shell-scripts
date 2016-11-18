@@ -12,6 +12,6 @@ rm $whitelist_file
 
 if [[ ! "$whitelist_contents" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then return; fi
 
-/usr/bin/env iptables -I INPUT -p tcp -m tcp -s $whitelist_contents --dport 22 -j ACCEPT
+/usr/sbin/iptables -I INPUT -p tcp -m tcp -s $whitelist_contents --dport 22 -j ACCEPT
 
 unset whitelist_file whitelist_contents
