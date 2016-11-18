@@ -75,6 +75,8 @@ function zsh_setup() {
 	
 	/root/shell-scripts/sysadmin/renew-letsencrypt-certs /root/config/letsencrypt-certs.conf
 	
+	sed -i -E "s@(^Defaults\s+requiretty$)@#\1@g" /etc/sudoers
+	
 	edit-haproxy
 	restart-haproxy
 	systemctl enable haproxy
