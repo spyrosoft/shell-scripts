@@ -37,7 +37,7 @@ function create-user {
 	# All users need a lock whitelist that includes the .cache directory and .histfile
 	echo "/home/$1/.cache /home/$1/.histfile" >> ~/lock-whitelists/$1
 	
-	echo "prompt_color=\"red\"\nprompt_prefix=\"=\"\n\n" >> /home/$1/.zsh-custom
+	echo "prompt_color=\"red\"\nprompt_prefix=\"=\"\n\nalias $1=\"screen -S $1\"\nalias re$1=\"screen -R $1\"" >> /home/$1/.zsh-custom
 	
 	if [[ "$2" == "sbcl" ]]; then
 		add-emacs-package $1 "sbcl.el"
