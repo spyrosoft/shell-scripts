@@ -17,11 +17,11 @@ function create-user {
 	# They can be updated for all users at once and are more secure
 	ln -s $HOME/.files/.zshrc /home/$1/
 	mkdir /home/$1/.emacs.d
-	ln -s $HOME/.files/.emacs.d/init.el /home/$1/.emacs.d/
-	ln -s $HOME/.files/.emacs.d/packages /home/$1/.emacs.d/
-	ln -s $HOME/.files/.emacs.d/individual-packages /home/$1/.emacs.d/
-	ln -s $HOME/.files/.emacs.d/elpa /home/$1/.emacs.d/
-	ln -s $HOME/.files/.emacs.d/packages.el /home/$1/.emacs.d/
+	ln -s $HOME/.emacs.d/init.el /home/$1/.emacs.d/
+	ln -s $HOME/.emacs.d/packages /home/$1/.emacs.d/
+	ln -s $HOME/.emacs.d/individual-packages /home/$1/.emacs.d/
+	ln -s $HOME/.emacs.d/elpa /home/$1/.emacs.d/
+	ln -s $HOME/.emacs.d/packages.el /home/$1/.emacs.d/
 	# Create a custom shell configuration file for the user to override default settings or add additional functionality
 	touch /home/$1/.zsh-custom
 	
