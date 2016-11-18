@@ -13,7 +13,7 @@ function create-systemd-service() {
 
 	new_service_file=/etc/systemd/system/$username.service
 	if [[ -f $new_service_file ]]; then
-		echo "This service exists: $username.service"
+		echo "This service exists: $new_service_file"
 		return
 	fi
 	cp $template_file $new_service_file
