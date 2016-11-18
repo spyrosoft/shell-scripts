@@ -8,6 +8,8 @@ config_file=$2
 if [[ ! -f $update_flag_file ]]; then return 1; fi
 if [[ ! -f $config_file ]]; then echo "The specified config file does not exist:" $config_file; return 1; fi
 
+source $HOME/shell-scripts/sysadmin/user-utilities/user-utilities
+
 function update-and-restart-server() {
 	cd /home/$1/$2
 	if [[ `git pull` != 'Already up-to-date.' ]]; then
@@ -18,6 +20,7 @@ function update-and-restart-server() {
 				return 1
 			fi
 		fi
+		lock $1
 		systemctl restart $1.service
 	else
 		echo 'Nothing to do for' $1
