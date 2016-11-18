@@ -1,9 +1,9 @@
 [Unit]
-Description=Server for DOMAIN.com
+Description=Server for DOMAIN
 After=haproxy.service
 
 [Service]
-ExecStart=/bin/sudo -u USERNAME screen -dmS USERNAME zsh -c "cd ~/DOMAIN.com; ./DOMAIN.com; exec zsh"
+ExecStart=/bin/sudo -u USERNAME screen -dmS USERNAME zsh -c "cd ~/DOMAIN; ./DOMAIN; exec zsh"
 ExecStop=/root/shell-scripts/sysadmin/end-server-screen-process USERNAME
 Type=forking
 GuessMainPID=no
