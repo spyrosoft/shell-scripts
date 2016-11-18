@@ -35,7 +35,7 @@ function create-user {
 	chsh -s $path_to_zsh $1
 	
 	# All users need a lock whitelist that includes the .cache directory and .histfile
-	echo "/home/$1/.cache /home/$1/.histfile" >> ~/lock-whitelists/$1
+	echo ".cache 660\n.histfile 660" >> ~/lock-whitelists/$1
 	
 	echo "prompt_color=\"red\"\nprompt_prefix=\"=\"\n\nalias $1=\"screen -S $1\"\nalias re$1=\"screen -R $1\"" >> /home/$1/.zsh-custom
 	
@@ -46,7 +46,7 @@ function create-user {
 		chown $1:$1 /home/$1/init-quicklisp.lisp
 		
 		# Hunchentoot's logs need to be writeable by the user
-		echo "/home/$1/hunchentoot/logs/" >> ~/lock-whitelists/$1
+		echo "hunchentoot/logs/" >> ~/lock-whitelists/$1
 		git clone https://github.com/spyrosoft/hunchentoot-boilerplate /home/$1/hunchentoot
 		
 		# Unlock all of the files in the user's directory for initialization
@@ -97,7 +97,17 @@ function lock() {
 	chown $1:$1 /home/$1
 	
 	if [[ -a ~/lock-whitelists/$1 ]]; then
-		chown -R $1:$1 `cat ~/lock-whitelists/$1`
+		while IFS='' read -r line || [[ -n "$line" ]]; do
+			eval "lock-file-with-permissions $1 $line"
+		done < ~/lock-whitelists/$1
+	fi
+}
+
+function lock-file-with-permissions() {
+	if [[ $# -eq 3 ]]; then
+		chmod -R $3 /home/$1/$2
+	elif [[ $# -eq 2 ]]; then
+	    chmod -R 640 /home/$1/$2
 	fi
 }
 
