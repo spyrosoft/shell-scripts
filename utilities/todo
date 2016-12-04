@@ -2,11 +2,11 @@
 
 function todo() {
 	if [[ "$1" -ne "list" && ! -f $todo_file_path ]]; then
-		echo "The todo file: \"$todo_file_path\" either does not exist or has not been set. Please use the todo list command.";
+		echo "The todo file: \"$todo_file_path\" either does not exist or has not been set. Please create a new list: `todo list NAME-OF-NEW-LIST`.";
 		return
 	fi
 	
-	if [[ "$1" == "help" ]]; then
+	if [[ "$1" == "--help" || "$1" == "-h" ]]; then
 		echo "Examples:"
 		echo
 		echo "  todo"
