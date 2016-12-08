@@ -2,5 +2,5 @@
 
 if [[ $# -ne 1 ]]; then echo "Usage: $0 USERNAME"; return 1; fi
 
-screen_pid=`ps aux | grep $1 | grep SCREEN | awk '{print $2}'`
+screen_pid=`ps aux | grep $1 | grep "SCREEN -dmS $1" | awk '{print $2}'`
 kill $screen_pid
