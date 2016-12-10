@@ -1,0 +1,31 @@
+function create-letsencrypt-cert() {
+	if [[ $# -lt 2 && $# -gt 3 ]]; then
+		echo "Usage: $0 EMAIL-USER-NAME DOMAIN [SUBDOMAIN]"
+		echo "Example: $0 you@example.com example.com www"
+		return 1
+	fi
+	
+	# Check if the certificate is within 30 days of expiring (60*60*24*30 => 2592000 seconds)
+	if openssl x509 -checkend 2592000 -noout -in /etc/haproxy/certs/$2.pem; then
+		return
+	fi
+	
+	cert_command="systemctl stop haproxy && letsencrypt certonly --agree-tos --standalone -n --email $1 -d $2"
+	
+	if [[ "$3" -ne "" ]]; then; cert_command="$cert_command -d $3.$2"; fi
+	
+	rm -r /etc/letsencrypt/archive/* /etc/letsencrypt/live/* /etc/letsencrypt/renewal/* /etc/letsencrypt/csr/* /etc/letsencrypt/keys/*
+	
+	if eval $cert_command; then
+		cp /etc/haproxy/certs/$2.pem /etc/haproxy/old-certs
+		cat /etc/letsencrypt/live/$2/fullchain.pem /etc/letsencrypt/live/$2/privkey.pem > /etc/haproxy/certs/$2.pem
+		
+		# Minimize permissions on all certificate files
+		chmod 400 /etc/haproxy/certs/*
+		find /etc/letsencrypt/live/ -type f -exec chmod 400 {} +
+	fi
+	
+	systemctl start haproxy
+	
+	unset cert_command
+}
