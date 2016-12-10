@@ -1,5 +1,5 @@
 function create-letsencrypt-cert() {
-	if [[ $# -lt 2 && $# -gt 3 ]]; then
+	if [[ $# -lt 2 || $# -gt 3 ]]; then
 		echo "Usage: $0 EMAIL-USER-NAME DOMAIN [SUBDOMAIN]"
 		echo "Example: $0 you@example.com example.com www"
 		return 1
