@@ -10,7 +10,7 @@ $build_command && ./$binary_file &
 inotifywait --format "%f" -me close_write -q . | while read file
 do
 	if [[ ! "$file" =~ $file_extension_expression ]]; then continue; fi
-	$build_command && killall $binary_file && echo "File modified: $file. Restarting server." && ./$binary_file &
+	$build_command && killall $binary_file; echo "File modified: $file. Restarting server." && ./$binary_file &
 done
 
 unset binary_file
