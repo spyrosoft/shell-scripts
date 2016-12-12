@@ -12,6 +12,9 @@ source $HOME/shell-scripts/sysadmin/user-utilities/user-utilities
 
 function update-and-restart-server() {
 	cd /home/$1/$2
+	# In combination with the `lock` command executable binaries are no longer executable
+	# Checkout to reset their permissions and allow a `git pull`
+	git checkout .
 	if [[ `git pull` != 'Already up-to-date.' ]]; then
 		if [[ "$3" == "go" ]]; then
 			# Break this out into its own if block to satisfy old-ass versions of zsh
