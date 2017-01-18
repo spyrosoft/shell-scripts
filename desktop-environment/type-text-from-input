@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+
+if [[ $# -ne 1 ]]; then echo "Please provide a path to the file which you would like to type"; return; fi
+
+file_path=""
+text_input_directory=~/programming/xdotool/type-text-input/
+
+if [[ -f $1 ]]; then
+	file_path=$1
+elif [[ -f $text_input_directory$1 ]]; then
+	file_path=$text_input_directory$1
+else
+	echo "No such file exists: $1 or $text_input_directory$1"
+	return
+fi
+
+content=`cat $file_path`
+
+sleep 0.25
+
+xdotool type $content
