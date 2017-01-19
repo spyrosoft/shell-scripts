@@ -108,7 +108,6 @@ function todo() {
 function todo-show-item-by-number() {
 	if [[ $# -ne 1 ]]; then echo "Usage: todo [index of todo]"; return; fi
 	sed -n "${1}p" $todo_file_path
-	unset todo_index
 }
 
 function todo-delete-item() {
@@ -131,7 +130,10 @@ function todone() {
 	done_todo=`sed -n "${todo_index}p" $todo_file_path`
 	echo $done_todo >> $todo_file_path
 	sed -i "${todo_index}d" $todo_file_path
-	echo "Next: " `todo`
-	echo "Complete:" $done_todo
+	echo
+	todo
+	echo
+	echo "DONE:" $done_todo
+	echo
 	unset todo_index done_todo
 }
