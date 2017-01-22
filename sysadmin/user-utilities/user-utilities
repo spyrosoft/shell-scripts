@@ -76,10 +76,12 @@ function create-user {
 }
 
 function lock-root() {
-	chown -R root:root ~
-	find ~ -exec chmod o-rwx {} +
+	chown -R root:root /root
+	find /root -exec chmod o-rwx {} +
 	chmod -R +r `cat ~/lock-whitelists/root`
 	find `cat ~/lock-whitelists/root` -type d -exec chmod +x {} +
+	find /root/.files -type d -exec chmod +rx {} +
+	find /root/.files -type f -exec chmod +r {} +
 	chmod +rx /root
 }
 
