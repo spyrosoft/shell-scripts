@@ -77,6 +77,8 @@ function zsh_setup() {
 	
 	sed -i -E "s@(^Defaults\s+requiretty$)@#\1@g" /etc/sudoers
 	
+	crontab /root/shell-scripts/sysadmin/templates/crontab
+	
 	edit-haproxy
 	restart-haproxy
 	systemctl enable haproxy
