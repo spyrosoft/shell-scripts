@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
-# Customize the following on a per-project basis:
-binary_file="example-binary-file-name"
-build_command="example build command"
-file_extension_expression=\.example-file-extension$
+binary_file=$1
+build_command=$2
+file_extension_expression=\.${3}$
 
 $build_command && ./$binary_file &
 

@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+## Directory
+echo "Enter the desired URL:"
+read url
+if [[ -f ~/sites/$url ]]; then
+	echo "A file exists at: ~/sites/$url. Abort!!"
+	return
+fi
+if [[ -d ~/sites/$url ]]; then
+	echo "A directory already exists at ~/sites/$url. Proceed? (Y/n)"
+	read proceed
+	if [[ "$proceed" != "y" && "$proceed" != "Y" && "$proceed" != "" ]]; then
+		return
+	fi
+fi
+mkdir ~/sites/$url
+if [[ $? -ne 0 ]]; then
+	echo "Could not create the directory: ~/sites/$url"
+	return
+fi
+cd ~/sites/$url
+
+
+## Boilerplate Go
+echo "Is this site static only? (Y/n)"
+read proceed
+if [[ "$proceed" == "y" || "$proceed" == "Y" || "$proceed" == "" ]]; then
+	cp ~/programming/go/src/website-boilerplate/static-only-main.go main.go
+	cp ~/programming/go/src/website-boilerplate/static-only-boilerplate.go boilerplate.go
+else
+	cp ~/programming/go/src/website-boilerplate/main.go main.go
+	cp ~/programming/go/src/website-boilerplate/boilerplate.go boilerplate.go
+	mkdir private
+    cp ~/programming/go/src/website-boilerplate/private/site-data.json private
+fi
+
+echo "What port will the site bind to?"
+read port
+sed -i "s@8080@$port@" main.go
+
+
+## Compile Utility
+cp ~/programming/shell-scripts/software-development/compile-and-run-on-file-change .
+sed -i "s@example-binary-file-name@$url@" compile-and-run-on-file-change
+sed -i "s@example build command@go build@" compile-and-run-on-file-change
+sed -i "s@example-file-extension@go@" compile-and-run-on-file-change
+
+
+## Awestruct
+mkdir awestruct
+cd awestruct
