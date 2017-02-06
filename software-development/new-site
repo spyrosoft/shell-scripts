@@ -40,13 +40,6 @@ read port
 sed -i "s@8080@$port@" main.go
 
 
-## Compile Utility
-cp ~/programming/shell-scripts/software-development/compile-and-run-on-file-change .
-sed -i "s@example-binary-file-name@$url@" compile-and-run-on-file-change
-sed -i "s@example build command@go build@" compile-and-run-on-file-change
-sed -i "s@example-file-extension@go@" compile-and-run-on-file-change
-
-
 ## Awestruct
 mkdir awestruct
 cd awestruct
