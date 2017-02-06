@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
 
-binary_file=$1
-build_command=$2
-file_extension_expression=\.${3}$
+if [[ $# -ne 3 ]]; then
+	echo "Usage: $0 binary-file 'build command' file-extension-expression"
+else
+	binary_file=$1
+	build_command=$2
+	file_extension_expression=\.${3}$
 
-$build_command && ./$binary_file &
+	$build_command && ./$binary_file &
 
-inotifywait --format "%f" -me close_write -q . | while read file
-do
-	if [[ ! "$file" =~ $file_extension_expression ]]; then continue; fi
-	$build_command && killall $binary_file; echo "File modified: $file. Restarting server." && ./$binary_file &
-done
+	inotifywait --format "%f" -me close_write -q . | while read file
+	do
+		if [[ ! "$file" =~ $file_extension_expression ]]; then continue; fi
+		$build_command && killall $binary_file; echo "File modified: $file. Restarting server." && ./$binary_file &
+		echo '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
+	done
 
-unset binary_file
+	unset binary_file
+fi
