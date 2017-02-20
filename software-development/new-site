@@ -56,5 +56,5 @@ mkdir -p js/vendor css/vendor
 cp ~/programming/html/foundation-6-boilerplate/js/vendor/*.js js/vendor
 cp ~/programming/html/foundation-6-boilerplate/css/vendor/*.css css/vendor
 cp ~/programming/html/foundation-6-boilerplate/sass/app.sass css/app.sass
-cp ~/programming/html/foundation-6-boilerplate/full-width.html.haml _layouts
+cp ~/programming/html/foundation-6-boilerplate/_layouts/general.html.haml _layouts
 cp -r ~/programming/html/foundation-6-boilerplate/error-templates .
