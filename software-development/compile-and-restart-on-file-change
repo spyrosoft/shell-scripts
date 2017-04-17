@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 
 if [[ $# -ne 3 ]]; then
-	echo "Usage: $0 'command with or without arguments' 'build command' file-extension-expression"
+	echo "Usage: $0 binary-file 'build command' file-extension-expression"
 else
-	command=$1
+	binary_file=$1
 	build_command=$2
 	file_extension_expression=\.${3}$
 
-	$build_command && ./$command
+	$build_command && ./$binary_file &
 
 	inotifywait --format "%f" -me close_write -q . | while read file
 	do
 		if [[ ! "$file" =~ $file_extension_expression ]]; then continue; fi
-		$build_command && echo "File modified: $file. Running: $command" && ./$command
+		$build_command && killall $binary_file; echo "File modified: $file. Restarting." && ./$binary_file &
 		echo '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
 	done
+
+	unset binary_file
 fi
