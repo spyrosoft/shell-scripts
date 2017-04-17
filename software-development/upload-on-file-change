@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [[ $# -ne 2 ]]; then
+	echo "Usage: $0 user@host:optional/path (no trailing slash) file-extension-expression"
+else
+	upload_path=$1
+	file_extension_expression=\.${2}$
+
+	inotifywait --format "%f" -me close_write -q . | while read file
+	do
+		if [[ ! "$file" =~ $file_extension_expression ]]; then continue; fi
+		scp $file $upload_path/$file
+	done
+fi
