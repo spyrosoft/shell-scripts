@@ -13,6 +13,6 @@ else
 	do
 		if [[ ! "$file" =~ $file_extension_expression ]]; then continue; fi
 		$build_command && echo "File modified: $file. Running: $command" && ./$command
-		echo '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
+		echo '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^' && echo && echo
 	done
 fi

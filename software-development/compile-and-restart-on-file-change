@@ -13,7 +13,7 @@ else
 	do
 		if [[ ! "$file" =~ $file_extension_expression ]]; then continue; fi
 		$build_command && killall $binary_file; echo "File modified: $file. Restarting." && ./$binary_file &
-		echo '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
+		echo '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^' && echo && echo
 	done
 
 	unset binary_file
