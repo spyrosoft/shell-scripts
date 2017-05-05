@@ -55,7 +55,7 @@ function zsh_setup() {
 	echo "$username $domain go" >> /root/config/pullhook.conf
 	source /root/.zshrc
 	
-	install haproxy golang emacs screen epel-release && install letsencrypt
+	install haproxy golang postgresql-server emacs screen yum-cron epel-release && install letsencrypt
 	
 	mv /etc/haproxy /etc/original-haproxy
 	git clone https://github.com/spyrosoft/haproxy-config /etc/haproxy
