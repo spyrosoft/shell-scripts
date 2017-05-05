@@ -2,7 +2,7 @@
 
 function bash_setup() {
 	yum update
-	yum install zsh git iptables-services
+	yum install zsh git wget iptables-services
 	
 	cd /root
 	git clone https://github.com/spyrosoft/shell-scripts
@@ -84,6 +84,9 @@ function zsh_setup() {
 	edit-haproxy
 	restart-haproxy
 	systemctl enable haproxy
+	
+	systemctl enable postgresql
+	systemctl enable yum-cron
 	
 	unset username domain
 	rm $0
