@@ -12,7 +12,7 @@ function create-letsencrypt-cert() {
 	
 	cert_command="systemctl stop haproxy && letsencrypt certonly --agree-tos --standalone -n --email $1 -d $2"
 	
-	if [[ "$3" -ne "" ]]; then; cert_command="$cert_command -d $3.$2"; fi
+	if [[ "$3" -ne "" ]]; then cert_command="$cert_command -d $3.$2"; fi
 	
 	rm -r /etc/letsencrypt/archive/* /etc/letsencrypt/live/* /etc/letsencrypt/renewal/* /etc/letsencrypt/csr/* /etc/letsencrypt/keys/*
 	
