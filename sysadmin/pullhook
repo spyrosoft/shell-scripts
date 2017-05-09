@@ -5,6 +5,8 @@ if [[ $# -ne 2 ]]; then echo "Usage: $0 /path/to/update/flag/file /path/to/updat
 update_flag_file=$1
 config_file=$2
 
+if [ ! -z ${GOPATH+x} ]; then GOPATH=/root/go; fi
+
 if [[ ! -f $update_flag_file ]]; then return 1; fi
 if [[ ! -f $config_file ]]; then echo "The specified config file does not exist:" $config_file; return 1; fi
 
