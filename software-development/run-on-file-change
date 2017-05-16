@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-if [[ $# -ne 3 ]]; then
+if [[ $# -ne 2 ]]; then
 	echo "Usage: $0 'command with or without arguments' file-extension-expression"
 else
 	command=$1
-	file_extension_expression=\.${3}$
+	file_extension_expression=\.${2}$
 
 	$command
 
