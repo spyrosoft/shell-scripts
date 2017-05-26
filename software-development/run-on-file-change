@@ -6,12 +6,14 @@ else
 	command=$1
 	file_extension_expression=\.${2}$
 
+	echo && echo 'vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv'
 	$command
+	echo '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^' && echo && echo
 
 	inotifywait --format "%f" -me close_write -q . | while read file
 	do
 		if [[ ! "$file" =~ $file_extension_expression ]]; then continue; fi
 		echo "File modified: $file. Running: $command" && $command
-		echo '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
+		echo '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^' && echo && echo
 	done
 fi
