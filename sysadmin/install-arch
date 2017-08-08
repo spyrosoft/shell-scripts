@@ -102,7 +102,7 @@ vim /mnt/usr/share/kbd/keymaps/i386/dvorak/dvorak-custom.map.gz
 
 echo "This may need to be done while chrooted - check on this"
 echo "Symlink the Los_Angeles timezone to /etc/localtime"
-ln -s /mnt/usr/share/zoneinfo/America/Los_Angeles /mnt/etc/localtime
+ln -s /usr/share/zoneinfo/America/Los_Angeles /mnt/etc/localtime
 
 echo "What would you like your new installation's hostname to be?"
 read new_hostname
